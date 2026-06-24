@@ -1,5 +1,9 @@
 pipeline {
     agent any
+	environment {
+		DOCKER_IMAGE = 'lostillusion099/jenkins-demo'
+		IMAGE_TAG = "${BUILD_NUMBER}"
+	}
 
     tools {
         nodejs 'Node26'
@@ -25,6 +29,12 @@ pipeline {
                 echo 'Tests passed!'
             }
         }
+	stage('Docker Build') {
+		steps {
+			sh 'docker build -t $DOCKER_IMAGE:$IMAGE_TAG .'
+			sh 'docker tag $DOCKER_IMAGE:$IMAGE_TAG $DOCKER_IMAGE:latest'
+		}
+	}
 
         stage('Deploy') {
             steps {
